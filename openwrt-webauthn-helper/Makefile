@@ -4,7 +4,7 @@ PKG_NAME:=webauthn-helper
 PKG_VERSION:=1.0.0
 PKG_RELEASE:=1
 
-PKG_LICENSE:=MIT
+PKG_LICENSE:=Apache-2.0
 PKG_MAINTAINER:=Tokisaki-Galaxy
 
 include $(INCLUDE_DIR)/package.mk
