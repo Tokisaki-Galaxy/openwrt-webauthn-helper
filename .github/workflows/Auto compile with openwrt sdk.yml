@@ -12,6 +12,8 @@ on:
         description: 'SSH connection to Actions'
         required: false
         default: 'false'
+permissions:
+  contents: write
 env:
   TZ: Asia/Shanghai
   openwrt-webauthn-helper: ${{ github.repository }}
