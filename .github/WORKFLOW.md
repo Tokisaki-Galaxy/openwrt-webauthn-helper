@@ -2,6 +2,24 @@
 
 This document describes the automated release workflow for openwrt-webauthn-helper.
 
+## Prerequisites
+
+### Required: Personal Access Token (PAT)
+
+To enable automatic workflow triggering, you need to create a Personal Access Token (PAT):
+
+1. Go to GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)
+2. Generate a new token with the following permissions:
+   - `repo` (Full control of private repositories)
+   - `workflow` (Update GitHub Action workflows)
+3. Copy the token
+4. Go to your repository Settings → Secrets and variables → Actions
+5. Create a new repository secret named `PAT` and paste the token
+
+**Why is this needed?** GitHub's default `GITHUB_TOKEN` cannot trigger additional workflow runs for security reasons. The PAT allows the sync workflow to trigger the build workflow automatically.
+
+**Fallback**: If no PAT is configured, the workflow will fall back to `GITHUB_TOKEN`, but automatic build triggering may not work. In this case, you'll need to manually trigger the build workflow.
+
 ## Overview
 
 The repository automatically monitors the upstream [webauthn-helper](https://github.com/Tokisaki-Galaxy/webauthn-helper) repository and creates synchronized releases with ipk/apk packages for multiple OpenWrt architectures.
@@ -87,7 +105,7 @@ When a new release is created, the description includes:
 
 Example:
 ```markdown
-![](https://img.shields.io/github/downloads/Tokisaki-Galaxy/webauthn-helper/v1.0.0/total?style=flat-square)
+[Upstream release description content here - varies by release]
 
 ---
 
@@ -96,6 +114,8 @@ Example:
 > ⚠️ **Note**: Packages for other platforms are currently being built. Files will be added to this release as they complete.
 > ⚠️ **注意**: 其他平台的软件包正在构建中，完成后将陆续添加到本页面
 ```
+
+**Note**: The upstream release description (if available) appears above the separator. If triggered manually without upstream metadata, only the build information section is included.
 
 ## Supported Architectures
 

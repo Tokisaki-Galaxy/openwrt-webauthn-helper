@@ -7,6 +7,9 @@ This guide explains how to test the automated release workflow.
 - Repository admin/write access
 - GitHub Actions enabled
 - Understanding of GitHub Actions workflows
+- **Recommended**: Personal Access Token (PAT) configured as `PAT` secret
+  - Without PAT, automatic workflow triggering may not work
+  - See WORKFLOW.md for PAT setup instructions
 
 ## Method 1: Manual Trigger (Recommended for Testing)
 
@@ -105,6 +108,18 @@ After running the workflow, verify:
 - [ ] Packages are being uploaded as they complete
 
 ## Common Issues and Solutions
+
+### Issue: Build workflow not triggered automatically
+
+**Cause**: GitHub's `GITHUB_TOKEN` cannot trigger additional workflows for security reasons.
+
+**Solution**: 
+1. Create a Personal Access Token (PAT) with `repo` and `workflow` permissions
+2. Add it as a repository secret named `PAT`
+3. The workflow will automatically use it: `token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}`
+4. See WORKFLOW.md for detailed PAT setup instructions
+
+**Workaround**: Manually trigger the build workflow after sync completes
 
 ### Issue: Workflow doesn't trigger automatically
 

@@ -35,6 +35,8 @@ opkg install /path/to/webauthn-helper_xxx.ipk
 
 发布说明会从上游仓库同步，确保两个项目之间的一致性。
 
+**注意**：为了让自动触发工作流正常运行，需要配置个人访问令牌（PAT）。详见 `.github/WORKFLOW.md` 中的设置说明。
+
 ## 许可证
 
 本项目采用 Apache-2.0 许可证。

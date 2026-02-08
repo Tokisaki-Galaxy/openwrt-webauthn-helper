@@ -36,6 +36,8 @@ This repository uses GitHub Actions to automatically:
 
 The release descriptions are synchronized from the upstream repository, ensuring consistency across both projects.
 
+**Note**: For automatic workflow triggering to work, a Personal Access Token (PAT) must be configured. See `.github/WORKFLOW.md` for setup instructions.
+
 ## License
 
 This project is licensed under the Apache-2.0 License.

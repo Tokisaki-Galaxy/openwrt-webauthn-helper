@@ -87,7 +87,7 @@ jobs:
       - name: Trigger build workflow
         uses: peter-evans/repository-dispatch@v3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
           event-type: upstream-release
           client-payload: |
             {
