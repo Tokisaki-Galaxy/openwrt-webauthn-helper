@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=webauthn-helper
-PKG_VERSION:=1.0.0
+PKG_VERSION:=1.0.1
 PKG_RELEASE:=1
 
 PKG_LICENSE:=Apache-2.0
@@ -13,7 +13,7 @@ include $(INCLUDE_DIR)/package.mk
 include $(TOPDIR)/feeds/packages/lang/rust/rust-values.mk
 
 # 二进制文件的文件名和URL
-RUST_WEBAUTHN_HELPER_VERSION:=1.0.0
+RUST_WEBAUTHN_HELPER_VERSION:=1.0.1
 RUST_BINARY_FILENAME:=webauthn-helper-$(RUST_WEBAUTHN_HELPER_VERSION)-$(RUSTC_TARGET_ARCH).tar.gz
 
 
@@ -23,7 +23,7 @@ PKG_SOURCE_URL:=https://github.com/Tokisaki-Galaxy/webauthn-helper/releases/down
 
 # 修正二进制文件校验值
 ifeq ($(ARCH),aarch64)
-	PKG_HASH:=99915c0623a5c4f2907acb20b48edcd0ce66916dc8e236e515bf45c5427fd4fe
+	PKG_HASH:=8449ad6688c0a912e135a5dda43af8d38325c851f3549a51bf953ccc77b567b5
 else ifeq ($(ARCH),arm) # update.sh skip this tag, do not delete this comment
 	# Ref https://github.com/openwrt/packages/blob/master/lang/rust/rust-values.mk
 
@@ -39,26 +39,26 @@ else ifeq ($(ARCH),arm) # update.sh skip this tag, do not delete this comment
 	endif
 
 	ifeq ($(ARM_CPU_TYPE),arm-armel)
-		PKG_HASH:=eb5f8b053901c6e2cf3f7bd1b00add544d5105747751cf32473f8a821aa1b187
+		PKG_HASH:=b907837288f447768ba88d3fcf3dd729c05dd3932b4228ff7c08d649f52cfaec
 	else ifeq ($(ARM_CPU_TYPE),arm-armhf)
-		PKG_HASH:=661ef670ac50dcf92574fe6813677afba29766e5d5ce80b612b358ce6d40d63f
+		PKG_HASH:=4cea2fc10da886412ac239fee061589e4e4a9936f767974b66a5c6450b5fc3aa
 	else ifeq ($(ARM_CPU_TYPE),armv5te-armel)
-		PKG_HASH:=ac52bd6b42f2d06103b5fdd03b627e17b28f8660b994058692162d105f83f7d9
+		PKG_HASH:=ba593cdfced72e20df02f4c41df38a016d19fd27b3c210dc2dbd492711df9e79
 	else ifeq ($(ARM_CPU_TYPE),armv7-armel)
-		PKG_HASH:=f04ef3a8656f070091df40a10ba420707b6f53e09790aca3db0ed50bad6fc508
+		PKG_HASH:=da812f5a94e6115b9c7023cf8a54be3622c3bbb9f976484f9dbe189cbde16b1d
 	else ifeq ($(ARM_CPU_TYPE),armv7-armhf)
-		PKG_HASH:=021a01ff9bac0a9865c73dcc50f6239e2d3b3be4491c82f96365e84c4e0c222b
+		PKG_HASH:=5b7319a562eb81668e00394b1209a3141f3b62aa3c953c66e7e145b016a8c9cd
 	else
 		PKG_HASH:=dummy
 	endif
 else ifeq ($(ARCH),mips)
-	PKG_HASH:=e8eb7b73cde68d423297a9f73a25989f872bc72714941e516f818afb8fca5375
+	PKG_HASH:=297090b28dd309cb9930abb86df7c3754f2a9e4410e5a36fc0ba651d1c8a06dd
 else ifeq ($(ARCH),mipsel)
-	PKG_HASH:=65c59b7e5f00ce8594c7f791900b2b26765b2c65510d124d2529f30d8a1b7624
+	PKG_HASH:=60f6ef5642286463de17522f0d0b8d6c30c589296b22dc5e0265b3953df87794
 else ifeq ($(ARCH),riscv64)
-	PKG_HASH:=b5e599368fe660a8451b9347326b74c882642b4b425c761d00d6e27607a0d645
+	PKG_HASH:=0f054618a27465d3c7b4a04589a97aee166d54b385cbd0a8647753b62e02610b
 else ifeq ($(ARCH),x86_64)
-	PKG_HASH:=29972d27014df1c21ef206506c93eae6300279fb1309f6b2cc2f9636be32e93e
+	PKG_HASH:=123f989fd05ff0294053d9dfe843aa2cb50c8f59ba39dc16dc9ce6deaa95b9d6
 else
 	PKG_HASH:=dummy
 endif
