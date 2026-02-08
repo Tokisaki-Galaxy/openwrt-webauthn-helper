@@ -31,7 +31,7 @@ The repository automatically monitors the upstream [webauthn-helper](https://git
 **File**: `.github/workflows/sync-upstream-release.yml`
 
 **Triggers**:
-- Scheduled: Every 6 hours (`0 */6 * * *`)
+- Repository dispatch: Event type `sync-upstream` (for upstream repository notifications)
 - Manual: via workflow_dispatch
 
 **Process**:
@@ -76,7 +76,7 @@ The repository automatically monitors the upstream [webauthn-helper](https://git
 **File**: `.github/workflows/version check.yml`
 
 **Triggers**:
-- Scheduled: Weekly on Friday at 5:00 UTC
+- Repository dispatch: Event type `sync-upstream` (for upstream repository notifications)
 - Manual: via workflow_dispatch
 
 **Process**:
@@ -128,15 +128,33 @@ Example:
 - Built from latest OpenWrt snapshot releases
 - Uses newer toolchain (GCC 14.3.0)
 
-## Manual Trigger
+## Triggering Workflows
+
+### Manual Trigger
 
 To manually trigger a release sync:
 
 1. Go to Actions tab
-2. Select "Sync Upstream Release" workflow
+2. Select "Sync Upstream Release" or "Version check (Legacy)" workflow
 3. Click "Run workflow"
 4. Wait for the workflow to complete
 5. The build workflow will be triggered automatically if a new version is detected
+
+### Upstream Repository Notification
+
+To trigger the workflow from the upstream repository or another source, use the GitHub API to send a `repository_dispatch` event:
+
+```bash
+curl -X POST \
+  -H "Authorization: token YOUR_PAT_TOKEN" \
+  -H "Accept: application/vnd.github.v3+json" \
+  https://api.github.com/repos/Tokisaki-Galaxy/openwrt-webauthn-helper/dispatches \
+  -d '{"event_type":"sync-upstream"}'
+```
+
+Replace `YOUR_PAT_TOKEN` with a personal access token that has `repo` scope.
+
+This allows the upstream repository to proactively notify this repository when a new release is published, saving GitHub Actions resources by avoiding scheduled cron jobs.
 
 ## Troubleshooting
 

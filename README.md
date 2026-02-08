@@ -29,12 +29,16 @@ opkg install /path/to/webauthn-helper_xxx.ipk
 
 This repository uses GitHub Actions to automatically:
 
-1. **Monitor upstream releases**: Checks for new releases from [webauthn-helper](https://github.com/Tokisaki-Galaxy/webauthn-helper) every 6 hours
+1. **Monitor upstream releases**: Receives notifications from [webauthn-helper](https://github.com/Tokisaki-Galaxy/webauthn-helper) or can be manually triggered
 2. **Update version**: Updates the Makefile with the latest version and checksums
 3. **Build packages**: Compiles packages for multiple OpenWrt architectures (both ipk and apk formats)
 4. **Create release**: Publishes a new release with the same description as the upstream release
 
 The release descriptions are synchronized from the upstream repository, ensuring consistency across both projects.
+
+**Trigger Methods**:
+- **Upstream notification**: The upstream repository can proactively notify this repository via `repository_dispatch` event (saves GitHub resources)
+- **Manual trigger**: Manually run the workflow from the Actions page
 
 **Note**: For automatic workflow triggering to work, a Personal Access Token (PAT) must be configured. See `.github/WORKFLOW.md` for setup instructions.
 

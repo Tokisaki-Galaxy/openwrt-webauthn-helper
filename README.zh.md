@@ -28,12 +28,16 @@ opkg install /path/to/webauthn-helper_xxx.ipk
 
 本仓库使用 GitHub Actions 自动完成以下工作：
 
-1. **监测上游发布**：每 6 小时检查一次 [webauthn-helper](https://github.com/Tokisaki-Galaxy/webauthn-helper) 的新版本发布
+1. **监测上游发布**：通过上游仓库主动通知或手动触发的方式检查 [webauthn-helper](https://github.com/Tokisaki-Galaxy/webauthn-helper) 的新版本发布
 2. **更新版本**：自动更新 Makefile 中的版本号和校验和
 3. **构建软件包**：为多个 OpenWrt 架构编译软件包（包括 ipk 和 apk 格式）
 4. **创建发布**：发布新版本，发布说明与上游仓库保持一致
 
 发布说明会从上游仓库同步，确保两个项目之间的一致性。
+
+**触发方式**：
+- **上游通知**：上游仓库可以通过 `repository_dispatch` 事件主动通知本仓库进行同步（节约 GitHub 资源）
+- **手动触发**：在 Actions 页面手动运行工作流
 
 **注意**：为了让自动触发工作流正常运行，需要配置个人访问令牌（PAT）。详见 `.github/WORKFLOW.md` 中的设置说明。
 
