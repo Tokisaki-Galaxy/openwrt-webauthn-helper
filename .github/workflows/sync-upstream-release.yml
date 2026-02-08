@@ -43,10 +43,8 @@ jobs:
             echo "has_new_release=true" >> $GITHUB_OUTPUT
             echo "upstream_version=$upstream_version" >> $GITHUB_OUTPUT
             echo "upstream_tag=$upstream_tag" >> $GITHUB_OUTPUT
-            # Save the body to a file and encode it
-            echo "$upstream_body" > /tmp/upstream_body.txt
             # Use base64 to safely pass the body as output
-            upstream_body_encoded=$(echo "$upstream_body" | base64 -w 0)
+            upstream_body_encoded=$(echo "$upstream_body" | base64 | tr -d '\n')
             echo "upstream_body=$upstream_body_encoded" >> $GITHUB_OUTPUT
           else
             echo "No new release"

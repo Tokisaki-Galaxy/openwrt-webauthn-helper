@@ -69,13 +69,28 @@ To fully test the upstream synchronization:
 4. Trigger the sync workflow
 5. Verify it picks up the test release
 
-### Option B: Simulating with Local Testing
+### Option B: Simulating Workflow Locally
 
-Run the workflow simulation script:
+You can simulate the workflow logic locally to verify behavior:
 
 ```bash
-cd openwrt-webauthn-helper
-bash /tmp/test_workflow_simulation.sh
+# Check upstream release
+upstream_release=$(curl -s https://api.github.com/repos/Tokisaki-Galaxy/webauthn-helper/releases/latest)
+upstream_tag=$(echo "$upstream_release" | jq -r '.tag_name')
+upstream_version=$(echo "$upstream_tag" | sed 's/^v//')
+
+echo "Upstream version: $upstream_version"
+
+# Check current version
+current_version=$(grep "^RUST_WEBAUTHN_HELPER_VERSION:=" openwrt-webauthn-helper/Makefile | cut -d'=' -f2)
+echo "Current version: $current_version"
+
+# Compare
+if [ "$upstream_version" != "$current_version" ]; then
+  echo "✓ New version detected - workflow would trigger"
+else
+  echo "✓ Already up to date - workflow would skip"
+fi
 ```
 
 This will show you what would happen without actually running the workflow.
