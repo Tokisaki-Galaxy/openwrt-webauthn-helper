@@ -1,4 +1,4 @@
-name: Version check
+name: Version check (Legacy)
 
 on:
   workflow_dispatch:
@@ -28,12 +28,41 @@ jobs:
         sudo apt update
         sudo apt -y install curl jq
 
-    - name: Commit and push files
+    - name: Check and update version
+      id: update
       shell: bash
       run: |
         cd openwrt-webauthn-helper/
+        # Store old version before update
+        OLD_VERSION=$(sed -n 's|RUST_WEBAUTHN_HELPER_VERSION:=||p' ./Makefile)
+        echo "Old version: $OLD_VERSION"
+        
         chmod +x ./update.sh
         bash ./update.sh
+        
+        # Check new version after update
+        NEW_VERSION=$(sed -n 's|RUST_WEBAUTHN_HELPER_VERSION:=||p' ./Makefile)
+        echo "New version: $NEW_VERSION"
+        
+        if [ "$OLD_VERSION" != "$NEW_VERSION" ]; then
+          echo "version_changed=true" >> $GITHUB_OUTPUT
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+        else
+          echo "version_changed=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Commit and push files
+      if: steps.update.outputs.version_changed == 'true'
+      shell: bash
+      run: |
+        cd openwrt-webauthn-helper/
         git add .
-        git diff-index --cached --quiet HEAD ./Makefile \
-        || (git commit -m "Update webauthn-helper to version $(sed -n 's|RUST_WEBAUTHN_HELPER_VERSION:=||p' ./Makefile)" && git push)
+        git commit -m "Update webauthn-helper to version ${{ steps.update.outputs.new_version }}"
+        git push
+
+    - name: Trigger build workflow
+      if: steps.update.outputs.version_changed == 'true'
+      uses: peter-evans/repository-dispatch@v3
+      with:
+        token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
+        event-type: upstream-release

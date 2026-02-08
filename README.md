@@ -9,6 +9,8 @@ English | [简体中文](README.zh.md)
 
 openwrt-webauthn-helper is a dependency package for luci-app-webauthn, providing WebAuthn/FIDO2 CLI helper functionality for OpenWrt routers.
 
+This repository automatically monitors the upstream [webauthn-helper](https://github.com/Tokisaki-Galaxy/webauthn-helper) repository for new releases and builds OpenWrt packages (ipk/apk format) for multiple architectures.
+
 ## Installation
 
 ### Install from Release
@@ -22,6 +24,19 @@ openwrt-webauthn-helper is a dependency package for luci-app-webauthn, providing
 ```bash
 opkg install /path/to/webauthn-helper_xxx.ipk
 ```
+
+## Automated Release Process
+
+This repository uses GitHub Actions to automatically:
+
+1. **Monitor upstream releases**: Checks for new releases from [webauthn-helper](https://github.com/Tokisaki-Galaxy/webauthn-helper) every 6 hours
+2. **Update version**: Updates the Makefile with the latest version and checksums
+3. **Build packages**: Compiles packages for multiple OpenWrt architectures (both ipk and apk formats)
+4. **Create release**: Publishes a new release with the same description as the upstream release
+
+The release descriptions are synchronized from the upstream repository, ensuring consistency across both projects.
+
+**Note**: For automatic workflow triggering to work, a Personal Access Token (PAT) must be configured. See `.github/WORKFLOW.md` for setup instructions.
 
 ## License
 
