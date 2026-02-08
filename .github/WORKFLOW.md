@@ -35,16 +35,12 @@ The repository automatically monitors the upstream [webauthn-helper](https://git
 - Manual: via workflow_dispatch
 
 **Process**:
-1. **Check Upstream Release**
-   - Fetches latest release from `Tokisaki-Galaxy/webauthn-helper`
-   - Compares upstream version with current Makefile version
-   - Extracts release description (body) from upstream
-
-2. **Update Version** (if new release detected)
+1. Fetches latest release tag from `Tokisaki-Galaxy/webauthn-helper`
+2. Compares with current repository's latest release tag
+3. If tags differ:
    - Updates Makefile using `update.sh` script
    - Commits and pushes changes
-   - Triggers build workflow via `repository_dispatch` with:
-     - `upstream_version`: Version number (e.g., "1.0.0")
+   - Triggers build workflow with:
      - `upstream_tag`: Git tag (e.g., "v1.0.0")
      - `upstream_body`: Release description (base64 encoded)
 

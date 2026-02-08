@@ -2,94 +2,54 @@ name: Sync Upstream Release
 
 on:
   schedule:
-    # Check for new upstream releases every 6 hours
     - cron: "0 */6 * * *"
   workflow_dispatch:
 
 jobs:
-  check_upstream:
-    name: Check Upstream Release
+  sync:
     runs-on: ubuntu-latest
-    outputs:
-      has_new_release: ${{ steps.check.outputs.has_new_release }}
-      upstream_version: ${{ steps.check.outputs.upstream_version }}
-      upstream_tag: ${{ steps.check.outputs.upstream_tag }}
-      upstream_body: ${{ steps.check.outputs.upstream_body }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Check upstream release
-        id: check
+      - name: Check and sync
         run: |
-          # Get latest upstream release
-          upstream_release=$(curl -s https://api.github.com/repos/Tokisaki-Galaxy/webauthn-helper/releases/latest)
-          upstream_tag=$(echo "$upstream_release" | jq -r '.tag_name')
-          upstream_version=$(echo "$upstream_tag" | sed 's/^v//')
-          upstream_body=$(echo "$upstream_release" | jq -r '.body')
+          # Get upstream release
+          upstream=$(curl -s https://api.github.com/repos/Tokisaki-Galaxy/webauthn-helper/releases/latest)
+          upstream_tag=$(echo "$upstream" | jq -r '.tag_name')
+          upstream_body=$(echo "$upstream" | jq -r '.body')
           
-          echo "Upstream tag: $upstream_tag"
-          echo "Upstream version: $upstream_version"
+          # Get current release
+          current_tag=$(curl -s https://api.github.com/repos/${{ github.repository }}/releases/latest | jq -r '.tag_name')
           
-          # Get current version from Makefile
-          current_version=$(grep "^RUST_WEBAUTHN_HELPER_VERSION:=" openwrt-webauthn-helper/Makefile | cut -d'=' -f2)
-          echo "Current version: $current_version"
+          echo "Upstream: $upstream_tag"
+          echo "Current: $current_tag"
           
-          # Check if we need to update
-          if [ "$upstream_version" != "$current_version" ]; then
-            echo "New release detected: $upstream_version"
-            echo "has_new_release=true" >> $GITHUB_OUTPUT
-            echo "upstream_version=$upstream_version" >> $GITHUB_OUTPUT
-            echo "upstream_tag=$upstream_tag" >> $GITHUB_OUTPUT
-            # Use base64 to safely pass the body as output
-            upstream_body_encoded=$(echo "$upstream_body" | base64 | tr -d '\n')
-            echo "upstream_body=$upstream_body_encoded" >> $GITHUB_OUTPUT
-          else
-            echo "No new release"
-            echo "has_new_release=false" >> $GITHUB_OUTPUT
+          # Check if update needed
+          if [ "$upstream_tag" = "$current_tag" ]; then
+            echo "Already up to date"
+            exit 0
           fi
-
-  update_version:
-    name: Update Version
-    needs: check_upstream
-    if: needs.check_upstream.outputs.has_new_release == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup environment
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y curl jq
-          git config --local user.name "GitHub Action"
-          git config --local user.email "actions-user@users.noreply.github.com"
-
-      - name: Update Makefile version
-        run: |
+          
+          echo "New release detected: $upstream_tag"
+          
+          # Update Makefile
           cd openwrt-webauthn-helper/
           chmod +x ./update.sh
           bash ./update.sh
-
-      - name: Commit and push changes
-        run: |
-          cd openwrt-webauthn-helper/
+          
+          # Commit changes
+          git config user.name "GitHub Action"
+          git config user.email "actions-user@users.noreply.github.com"
           git add .
-          git diff-index --cached --quiet HEAD ./Makefile || \
-            (git commit -m "Update webauthn-helper to version ${{ needs.check_upstream.outputs.upstream_version }}" && git push)
-
-      - name: Trigger build workflow
-        uses: peter-evans/repository-dispatch@v3
-        with:
-          token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
-          event-type: upstream-release
-          client-payload: |
-            {
-              "upstream_version": "${{ needs.check_upstream.outputs.upstream_version }}",
-              "upstream_tag": "${{ needs.check_upstream.outputs.upstream_tag }}",
-              "upstream_body": "${{ needs.check_upstream.outputs.upstream_body }}"
-            }
+          git diff-index --cached --quiet HEAD || git commit -m "Update to $upstream_tag"
+          git push
+          
+          # Trigger build
+          upstream_body_encoded=$(echo "$upstream_body" | base64 | tr -d '\n')
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.PAT || secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.repository }}/dispatches \
+            -d "{\"event_type\":\"upstream-release\",\"client_payload\":{\"upstream_tag\":\"$upstream_tag\",\"upstream_body\":\"$upstream_body_encoded\"}}"

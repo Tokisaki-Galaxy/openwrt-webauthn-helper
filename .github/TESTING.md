@@ -74,22 +74,20 @@ To fully test the upstream synchronization:
 You can simulate the workflow logic locally to verify behavior:
 
 ```bash
-# Check upstream release
-upstream_release=$(curl -s https://api.github.com/repos/Tokisaki-Galaxy/webauthn-helper/releases/latest)
-upstream_tag=$(echo "$upstream_release" | jq -r '.tag_name')
-upstream_version=$(echo "$upstream_tag" | sed 's/^v//')
+# Get upstream release tag
+upstream_tag=$(curl -s https://api.github.com/repos/Tokisaki-Galaxy/webauthn-helper/releases/latest | jq -r '.tag_name')
 
-echo "Upstream version: $upstream_version"
+# Get current release tag
+current_tag=$(curl -s https://api.github.com/repos/Tokisaki-Galaxy/openwrt-webauthn-helper/releases/latest | jq -r '.tag_name')
 
-# Check current version
-current_version=$(grep "^RUST_WEBAUTHN_HELPER_VERSION:=" openwrt-webauthn-helper/Makefile | cut -d'=' -f2)
-echo "Current version: $current_version"
+echo "Upstream: $upstream_tag"
+echo "Current: $current_tag"
 
 # Compare
-if [ "$upstream_version" != "$current_version" ]; then
-  echo "✓ New version detected - workflow would trigger"
-else
+if [ "$upstream_tag" = "$current_tag" ]; then
   echo "✓ Already up to date - workflow would skip"
+else
+  echo "✓ New release detected - workflow would trigger"
 fi
 ```
 
